@@ -15,6 +15,10 @@ const bot = new Telegraf(process.env.TOKEN, { polling: true });
 // Подключаемся к MongoDB
 connectDB();
 
+bot.telegram.setMyCommands([
+    { command: '/start', description: 'Start' },
+])
+
 async function showPosts(ctx, postId) {
     const posts = await Post.find({});
     const post = posts.find((element) => {

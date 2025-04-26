@@ -1,0 +1,118 @@
+  // 🔧 Генерация изображения с названием вакансии
+//   async function generateImageFromTemplate(data, category) {
+//     //   const templatePath = path.join(__dirname, 'templates', `${category}.html`);
+//     //   console.log(typeof category);
+      
+//     //   if (!fs.existsSync(templatePath)) throw new Error('Шаблон не найден');
+  
+//     //   let html = await fs.readFile(templatePath, 'utf8', (err, data) => {
+//     //       if (err) {
+//     //         console.error('Ошибка при чтении файла:', err);
+//     //       } else {
+//     //         console.log('Содержимое файла:', data);
+//     //       }
+//     //     });
+  
+//     //   for (const key in data) {
+//     //       html = html.replace(new RegExp(`{{${key}}}`, 'g'), data[key]);
+//     //   }
+  
+//       const browser = await puppeteer.launch();
+//       const page = await browser.newPage();
+//       await page.setContent(html);
+//       const filePath = path.join(__dirname, 'output', `${Date.now()}.png`);
+//       await page.screenshot({ path: filePath });
+//       await browser.close();
+//       return filePath;
+//   }
+  
+// 🔧 Генерация изображения с названием вакансии
+async function generateImage(vacancyTitle, outputPath) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+  
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body {
+              width: 1200px;
+              height: 630px;
+              margin: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background: #f5f5f5;
+              font-family: 'Arial';
+            }
+            .box {
+              text-align: center;
+              font-size: 48px;
+              color: #333;
+              border: 5px solid #222;
+              padding: 40px;
+              border-radius: 20px;
+              background: #ffffff;
+              box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            }
+          </style>
+        </head>
+        <body>
+          <div class="box">${vacancyTitle}</div>
+        </body>
+      </html>
+    `;
+  
+    await page.setContent(htmlContent);
+    await page.setViewport({ width: 1200, height: 630 });
+    await page.screenshot({ path: outputPath });
+    await browser.close();
+  }
+  
+
+
+
+
+
+
+  async (ctx) => {
+          if (ctx.message.text === '/cancel') {
+              await ctx.reply('❌ Создание поста отменено.');
+              return ctx.scene.leave();
+          }
+  
+          // if (!ctx.message.photo) return ctx.reply('Пожалуйста, отправьте изображение.');
+          // ctx.wizard.state.data.photo = ctx.message.photo.pop().file_id;
+  
+          ctx.wizard.state.data.address = ctx.message.text;
+  
+        //   const data = ctx.wizard.state.data;
+        //   try {
+        //       const imagePath = await generateImageFromTemplate({
+        //           title: data.title,
+        //           address: data.address
+        //       }, data.category);
+  
+        //       await ctx.replyWithPhoto({ source: imagePath });
+        //   } catch (err) {
+        //       await ctx.reply('❌ Ошибка генерации шаблона: ' + err.message);
+        //   }
+  
+          const imagePath = `./images/vacancy_${ctx.from.id}.png`;
+          await generateImage(ctx.wizard.state.data.title, imagePath);
+          await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
+  
+          await ctx.reply('2️⃣ Введите хэштеги');
+          return ctx.wizard.next();
+      },
+
+
+
+
+
+      async (ctx) => {
+          if (ctx.from.id !== +process.env.ADMIN_ID) return ctx.reply('⛔ У вас нет прав публиковать посты.');
+          ctx.wizard.state.data = {};
+          await ctx.reply('1️⃣ Категория вакансии (например: уборка, стройка, курьер)');
+          return ctx.wizard.next();
+      },

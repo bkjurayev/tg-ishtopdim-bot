@@ -26,11 +26,11 @@ async function showPosts(ctx, postId) {
     });
     console.log(post);
     
-    await ctx.reply(`<b>ЮКЛАНГАН САНА: ➡️</b> ${post.createdAt.toLocaleString("ru-RU")}`, { parse_mode: 'HTML' });
-    await ctx.reply(`<b>ИШ ТУРИ: ➡️</b> ${post.category}`, { parse_mode: 'HTML' });
-    await ctx.reply(`<b>ЯШАШ ЖОЙИ БЕРИЛАДИМИ: ➡️</b> ${post.hous}`, { parse_mode: 'HTML' });
-    await ctx.reply(`<b>КАЙСИ ШАХАРДА ЖОЙЛАШГАН: ➡️</b> ${post.city}`, { parse_mode: 'HTML' });
-    await ctx.reply(`<b>БОГЛАНИШ: ➡️</b> ${post.contacts}`, { parse_mode: 'HTML' });
+    await ctx.reply(`<b>🕒 ЮКЛАНГАН САНА: ➡️</b> ${post.createdAt.toLocaleString("ru-RU")}`, { parse_mode: 'HTML' });
+    await ctx.reply(`<b>📌 ИШ ТУРИ: ➡️</b> ${post.category}`, { parse_mode: 'HTML' });
+    await ctx.reply(`<b>🛏 ЯШАШ ЖОЙИ БЕРИЛАДИМИ: ➡️</b> ${post.hous}`, { parse_mode: 'HTML' });
+    await ctx.reply(`<b>📍 КАЙСИ ШАХАРДА ЖОЙЛАШГАН: ➡️</b> ${post.city}`, { parse_mode: 'HTML' });
+    await ctx.reply(`<b>📞 БОГЛАНИШ: ➡️</b> ${post.contacts}`, { parse_mode: 'HTML' });
     if (post.telegram.length > 4) {
         await ctx.reply(`<b>ТЕЛЕГРАМ: ➡️</b> ${post.telegram}`, { parse_mode: 'HTML' });
     }
@@ -124,15 +124,6 @@ const postWizard = new Scenes.WizardScene(
             return ctx.scene.leave();
         }
         ctx.wizard.state.data.salary = ctx.message.text;
-        await ctx.reply('7️⃣ Статус вакансии (актуально/неактуально)');
-        return ctx.wizard.next();
-    },
-    async (ctx) => {
-        if (ctx.message.text === '/cancel') {
-            await ctx.reply('❌ Создание поста отменено.');
-            return ctx.scene.leave();
-        }
-        ctx.wizard.state.data.status = ctx.message.text;
         await ctx.reply('8️⃣ Требования');
         return ctx.wizard.next();
     },
@@ -169,24 +160,6 @@ const postWizard = new Scenes.WizardScene(
             return ctx.scene.leave();
         }
         ctx.wizard.state.data.contacts = ctx.message.text;
-        await ctx.reply('1️⃣2️⃣ Ссылка на Telegram администратора');
-        return ctx.wizard.next();
-    },
-    async (ctx) => {
-        if (ctx.message.text === '/cancel') {
-            await ctx.reply('❌ Создание поста отменено.');
-            return ctx.scene.leave();
-        }
-        ctx.wizard.state.data.adminLink = ctx.message.text;
-        await ctx.reply('1️⃣3️⃣ Реклама бота');
-        return ctx.wizard.next();
-    },
-    async (ctx) => {
-        if (ctx.message.text === '/cancel') {
-            await ctx.reply('❌ Создание поста отменено.');
-            return ctx.scene.leave();
-        }
-        ctx.wizard.state.data.botAd = ctx.message.text;
         const data = ctx.wizard.state.data;
         const postId = `post_${Date.now()}`;
         ctx.wizard.state.data.post_id = postId;
@@ -195,11 +168,11 @@ const postWizard = new Scenes.WizardScene(
     ${data.hashtag}
     
 <b>📌 ${data.title}\n</b>
-• <b>Ишчи: </b> ${data.count}
-• <b>Маош: </b> ${data.salary}
-• <b>Манзил: </b> ${data.address}
+• <b>👤 Ишчи: </b> ${data.count}
+• <b>💰 Маош: </b> ${data.salary}
+• <b>📍 Манзил: </b> ${data.address}
 • <b>Ⓜ️: </b> ${data.metro}
-• <b>Холат: </b> ${data.status}
+• <b>Холат: </b> #фаол
   
 📋 <b>Сиздан талаб килинади:</b>
 ${data.requirements}
@@ -213,9 +186,9 @@ ${data.additional}
 📞 <b>Богланиш учун:</b>
 ${data.contacts}
   
-👉🏻 <b>Эълон жойлаш учун:</b> ${data.adminLink}
+👉🏻 <b>Эълон жойлаш учун:</b> @bk_juraev
     
-🤖 ${data.botAd}`;
+🤖 @IshTopdimRuBot —  сизнинг ёрдамчингиз!`;
 
         await ctx.telegram.sendPhoto(process.env.CHANNEL_ID, data.photo, {
             caption,
